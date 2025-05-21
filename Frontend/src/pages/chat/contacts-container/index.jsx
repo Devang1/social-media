@@ -6,7 +6,7 @@ import { Toaster, toast } from 'sonner';
 import axios from "axios";
 function ContactsContainer() {
   const navigate=useNavigate();
-  const userinfo ={firstname:"devang",lastname:"kishore",id:1,profilesetup:true , gender:"male",image:"https://avatar.iran.liara.run/public/girl?username=Ash" ,email:"devangshukla119@gmail.com"};
+  const userinfo = useSelector((state) => state.chat.userinfo);
   const { selectedChatData, selectedChatMessages, selectedChatType } = useSelector((state) => state.chat);
   const[Totalcontacts,setTotalcontacts]=useState([])
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ function ContactsContainer() {
   const getcontacts = useCallback(async () => {
     try {
       const fetched_contacts = await axios.get("/api/contacts", {
-        params: { email: userinfo.email },
+        params: { email: userinfo.username },
         withCredentials: true,
       });
       setTotalcontacts(fetched_contacts.data);
@@ -62,7 +62,7 @@ function ContactsContainer() {
           {contacts.length>0?(contacts.map((chat, index) => (
             <li key={index} className="p-2 bg-gray-800 rounded-xl hover:bg-cyan-400/20 transition flex items-center gap-2" onClick={()=>{handelContactClick(chat)}}>
               <img src={chat.image? `/api/image/${chat.id}`:chat.gender=="Male"?"https://avatar.iran.liara.run/public/boy?username=Ash":"https://avatar.iran.liara.run/public/girl?username=Ash"} alt="User" className="w-10 h-10 rounded-full" />
-              <strong className="text-cyan-300 ">{`${chat.fullname} ${chat.lastname!=null?chat.lastname:""}`}</strong>
+              <strong className="text-cyan-300 ">{chat.fullname}</strong>
             </li>
           ))):<h1>User not found</h1>}
         </ul>
@@ -70,7 +70,7 @@ function ContactsContainer() {
         <hr className="border-2 border-gray-500 mx-auto shadow-lg shadow-cyan-400/30" />
         <div className="flex gap-2 mt-10 items-center ">
         <img src={imageUrl} alt="User" className="w-10 h-10 rounded-full" />
-        <h1 className="font-medium">{`${userinfo.firstname} ${userinfo.lastname!=null||userinfo.lastname!="null"?userinfo.lastname:""}`}</h1>
+        <h1 className="font-medium">{`${userinfo.username}`}</h1>
         <i className="fa-solid fa-pencil cursor-pointer text-xl text-cyan-400" onClick={()=>{navigate("/profile")}}></i>
         <i className="fa-solid fa-power-off text-cyan-400 cursor-pointer ml-5" onClick={()=>{logout()}}></i>
       </div>

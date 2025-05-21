@@ -8,7 +8,7 @@ import { setSelectedChatMessages, setSelectedChatType, closeChat } from '../../.
 function ChatContainer() {
   const emojiref=useRef();
   const socket=useSocket();
-  const userinfo ={id:1,profilesetup:true , gender:"male",image:"https://avatar.iran.liara.run/public/girl?username=Ash" ,email:"devangshukla119@gmail.com"};
+  const userinfo = useSelector((state) => state.chat.userinfo);
   const [emojipicker,setemojipicker]=useState(false);
   const [message, setMessage] = useState("");
   const [imgclick, setimgclick] = useState("");
@@ -47,9 +47,9 @@ const dispatch = useDispatch();
     if(message!=""){
       if(selectedChatType==="direct"){
     socket.emit("sendMessage",{
-      sender:userinfo.id,
+      sender:userinfo.user_id,
       content:message,
-      reciever:selectedChatData.id,
+      reciever:selectedChatData.user_id,
       message_type:"text",
       file_url:undefined
     })
@@ -79,8 +79,8 @@ const dispatch = useDispatch();
   useEffect(()=>{
     const getrecentimages=async()=>{
       const response = await axios.post('/api/getImages', {
-        sender:userinfo.id,
-        reciever:selectedChatData.id,
+        sender:userinfo.user_id,
+        reciever:selectedChatData.user_id,
       });
       setimages(response.data);
     }
@@ -91,8 +91,8 @@ const dispatch = useDispatch();
   useEffect(() => {
     const handleGetMessages=async()=>{
       const response = await axios.post('/api/getMessages', {
-        sender:userinfo.id,
-        reciever:selectedChatData.id,
+        sender:userinfo.user_id,
+        reciever:selectedChatData.user_id,
       });
       dispatch(setSelectedChatMessages(response.data));
     }
@@ -221,7 +221,7 @@ const dispatch = useDispatch();
                   <div
                     key={index}
                     className={`p-3 md:p-4 my-2 w-[60vw] md:max-w-xs h-auto break-words  ${
-                      msg.sender === userinfo.id
+                      msg.sender === userinfo.user_id
                         ? "ml-auto bg-cyan-600"
                         : "bg-gray-700"
                     } rounded-4xl shadow-md shadow-cyan-400/30`}
@@ -230,7 +230,7 @@ const dispatch = useDispatch();
                   </div>
                   <p
                     className={`text-slate-400 my-1 max-w-xs text-sm  ${
-                      msg.sender === userinfo.id ? "ml-auto text-right mr-3 " : "text-left ml-3"
+                      msg.sender === userinfo.user_id ? "ml-auto text-right mr-3 " : "text-left ml-3"
                     }`}
                   >
                     {timeAgo(msg.timestamp)}
@@ -241,7 +241,7 @@ const dispatch = useDispatch();
                 <div
                   key={index}
                   className={`md:p-2 p-1 max-w-[40vw] my-2 md:max-w-[19vw] h-auto flex items-center justify-center  ${
-                    msg.sender === userinfo.id
+                    msg.sender === userinfo.user_id
                       ? "ml-auto bg-cyan-600"
                       : "bg-gray-700"
                   } rounded-4xl shadow-md shadow-cyan-400/30`}
@@ -255,7 +255,7 @@ const dispatch = useDispatch();
                  </div >
                  <p
                     className={`text-slate-400 my-1 max-w-xs text-sm  ${
-                      msg.sender === userinfo.id ? "ml-auto text-right mr-3 " : "text-left ml-3"
+                      msg.sender === userinfo.user_id ? "ml-auto text-right mr-3 " : "text-left ml-3"
                     }`}
                   >
                   {timeAgo(msg.timestamp)}
@@ -373,7 +373,7 @@ const dispatch = useDispatch();
                   <div
                     key={index}
                     className={`p-4 my-2 max-w-xs h-auto break-words  ${
-                      msg.sender === userinfo.id
+                      msg.sender === userinfo.user_id
                         ? "ml-auto bg-cyan-600"
                         : "bg-gray-700"
                     } rounded-4xl shadow-md shadow-cyan-400/30`}
@@ -382,7 +382,7 @@ const dispatch = useDispatch();
                   </div>
                   <p
                     className={`text-slate-400 my-1 max-w-xs text-sm  ${
-                      msg.sender === userinfo.id ? "ml-auto text-right mr-3 " : "text-left ml-3"
+                      msg.sender === userinfo.user_id ? "ml-auto text-right mr-3 " : "text-left ml-3"
                     }`}
                   >
                     {timeAgo(msg.timestamp)}
@@ -393,7 +393,7 @@ const dispatch = useDispatch();
                 <div
                   key={index}
                   className={`p-2  my-2 max-w-[19vw] h-auto flex items-center justify-center  ${
-                    msg.sender === userinfo.id
+                    msg.sender === userinfo.user_id
                       ? "ml-auto bg-cyan-600"
                       : "bg-gray-700"
                   } rounded-4xl shadow-md shadow-cyan-400/30`}
@@ -407,7 +407,7 @@ const dispatch = useDispatch();
                  </div >
                  <p
                     className={`text-slate-400 my-1 max-w-xs text-sm  ${
-                      msg.sender === userinfo.id ? "ml-auto text-right mr-3 " : "text-left ml-3"
+                      msg.sender === userinfo.user_id ? "ml-auto text-right mr-3 " : "text-left ml-3"
                     }`}
                   >
                   {timeAgo(msg.timestamp)}

@@ -8,7 +8,7 @@ import GoogleStrategy from 'passport-google-oauth2'
 import session from 'express-session'
 import env from 'dotenv'
 import cors from "cors"
-
+import setupSocket from "./socket.js";
 const app = express()
 const saltRounds = 10
 env.config()
@@ -49,17 +49,44 @@ app.use(passport.session())
 app.get("/api/contacts",async(req,res)=>{
     if(req.isAuthenticated){
     const email = req.query.email;
-    console.log(email)
-    const contacts = await db.query("SELECT * FROM users WHERE email != $1", [
+    const contacts = await db.query("SELECT * FROM users WHERE username != $1", [
       email,
     ]);
     res.send(contacts.rows);
-  console.log(contacts.rows)}
+  }
     else{
       console.log("not");
     }
   })
-
+  app.post("/api/getImages",async(req,res)=>{
+  try{
+    const user1=req.body.sender;
+    const user2=req.body.reciever;
+    const images= await db.query("SELECT file_url FROM messages WHERE ((sender = $1 AND reciever = $2)OR (sender = $2 AND reciever = $1)) AND(message_type=$3)ORDER BY timestamp DESC limit 3;",[user1,user2,"file"]);
+    res.send(images.rows);
+  }catch (error) {
+    console.error("Server Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+})
+app.post("/api/getMessages",async(req,res)=>{
+  try{
+    const user1=req.body.sender;
+    const user2=req.body.reciever;
+    const messages= await db.query("SELECT * FROM messages WHERE (sender = $1 AND reciever = $2)OR (sender = $2 AND reciever = $1)ORDER BY timestamp ASC;",[user1,user2]);
+    res.send(messages.rows);
+  }catch (error) {
+    console.error("Server Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+})
+app.get("/api/isAuth",async(req,res)=>{
+  const username=req.query.user
+  const Bdata= await db.query("SELECT * FROM users WHERE username = $1", [
+        username,
+      ]);
+  res.send(Bdata.rows[0]);
+})
 app.post('/api/createAccount', async function (req, res) {
   const user = req.body.username
   const name = req.body.fullname
@@ -202,4 +229,5 @@ passport.deserializeUser((user, cb) => {
 
 const port = process.env.port || 3000
 
-app.listen(port)
+const server=app.listen(port)
+setupSocket(server);

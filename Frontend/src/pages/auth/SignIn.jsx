@@ -5,19 +5,34 @@ import { save } from '../../redux/userSlice'
 import { FcGoogle } from "react-icons/fc";
 import { share } from "../../redux/slice";
 import { useNavigate } from 'react-router-dom'
-
+import { setuserinfo} from '../../redux/chat-slice';
+import axios from "axios";
 const SignIn = () => {
   const [username, setUsername] = useState("")
   const [pass, setPass] = useState("")
   const [login, setLogin] = useState(true)
   const navigate  = useNavigate()
   const dispatch = useDispatch()
+  const fetchUser = async () => {
+      try {
+        const response = await axios.get("/api/isAuth", {
+                            params: { username }, 
+                            withCredentials: true,
+                          });
+        if (response.data !== "not authenticated") {
+          dispatch(setuserinfo(response.data)); 
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
   const handleLogin = () => {
     const user = { username: username, password: pass }
     dispatch(save(user))
     navigate('/home')
     setUsername("")
     setPass("")
+    fetchUser()
   }
   const handleComponent = (e) => {
     e.preventDefault()

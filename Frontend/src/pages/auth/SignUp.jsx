@@ -5,7 +5,8 @@ import img from '../../assets/EduSphere_Left_Part.jpeg'
 import { useSelector, useDispatch } from "react-redux";
 import { share } from '../../redux/slice'
 import { useNavigate } from 'react-router-dom'
-
+import { setuserinfo} from '../../redux/chat-slice';
+import axios from "axios";
 const SignUp = () => {
   const [username, setUsername] = useState("")
   const [pass, setPass] = useState("")
@@ -14,6 +15,19 @@ const SignUp = () => {
   const [login, setLogin] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const fetchUser = async () => {
+      try {
+        const response = await axios.get("/api/isAuth", {
+                            params: { username }, 
+                            withCredentials: true,
+                          });
+        if (response.data !== "not authenticated") {
+          dispatch(setuserinfo(response.data)); 
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
   // const userInfo = useSelector((state)=> state.userInfo.user)
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -42,7 +56,9 @@ const SignUp = () => {
   
       if (response.ok) {
         alert("Signup successful");
+        console.log(user)
         navigate("/home");
+        fetchUser()
       } else {
         alert("Signup failed: " + message);
       }
