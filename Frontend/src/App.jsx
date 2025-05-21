@@ -8,6 +8,7 @@ import AuthLayout from './pages/auth/AuthLayout'
 import HomeLayout from './pages/root/HomeLayout'
 import { Profile,Create } from './pages/root';
 import './App.css'
+import Chat from "./pages/chat"
 import ExplorePage from './pages/root/ExplorePage';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
     <>
       <main>
         <Routes>
+          <Route path='/chat' element={<Chat/>}/>
           <Route element={<AuthLayout />}>
             <Route index element={<SignIn />} />
             <Route path='/SignUp' element={<SignUp />} />

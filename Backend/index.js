@@ -13,7 +13,7 @@ const app = express()
 const saltRounds = 10
 env.config()
 
-app.use(
+app.use( 
     cors({
       origin:"http://localhost:5173",
       methods:["GET","POST","PUT","PATCH","DELETE"],
@@ -45,6 +45,20 @@ app.use(
 
 app.use(passport.initialize())
 app.use(passport.session())
+// chat----section
+app.get("/api/contacts",async(req,res)=>{
+    if(req.isAuthenticated){
+    const email = req.query.email;
+    console.log(email)
+    const contacts = await db.query("SELECT * FROM users WHERE email != $1", [
+      email,
+    ]);
+    res.send(contacts.rows);
+  console.log(contacts.rows)}
+    else{
+      console.log("not");
+    }
+  })
 
 app.post('/api/createAccount', async function (req, res) {
   const user = req.body.username

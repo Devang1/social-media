@@ -1,11 +1,13 @@
-import React from "react";
+
 import { IoIosSearch,IoIosNotifications } from "react-icons/io";
 import { TiMessages } from "react-icons/ti";
 import { useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
   const user = useSelector((state)=>state.userInfo.user)
   console.log(user)
+  const navigate  = useNavigate()
   return (
     <>
       <div className="w-full h-16 bg-gray-900 flex p-10 text-white justify-between items-center">
@@ -15,7 +17,7 @@ const Navbar = () => {
           <input type="search" placeholder="Search for content " className="outline-none"></input>
         </div>
         <div className="flex items-center gap-2 text-2xl">
-          <TiMessages />
+          <TiMessages className="cursor-pointer" onClick={()=>{ navigate('/chat')}} />
           <IoIosNotifications />
           <div className="flex items-center gap-0">
             <h2 className="text-sm">{user.username}</h2>
